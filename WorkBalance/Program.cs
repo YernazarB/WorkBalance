@@ -36,6 +36,12 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dataContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dataContext.Database.Migrate();
+}
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
