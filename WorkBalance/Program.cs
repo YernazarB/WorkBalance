@@ -1,12 +1,25 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
+using System.Reflection;
+using WorkBalance.Core;
+using WorkBalance.Core.Common;
 using WorkBalance.DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddControllers().ConfigureApiBehaviorOptions(o =>
+{
+    o.InvalidModelStateResponseFactory = context =>
+    {
+        var errorMessage = string.Join(" ", context.ModelState
+                .SelectMany(x => x.Value?.Errors ?? []).Select(x => x.ErrorMessage));
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        var result = BaseHandlerResult.ErrorResult(HandlerErrorCode.BadRequest, errorMessage);
+        return new ObjectResult(result) { StatusCode = (int)HttpStatusCode.BadRequest };
+    };
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -16,9 +29,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString);
 });
 
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(
+    Assembly.GetAssembly(typeof(ICoreAssembly)) ?? 
+    Assembly.GetExecutingAssembly()));
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -26,8 +42,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 

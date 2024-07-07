@@ -4,7 +4,6 @@
     {
         Undefined = 0,
         BadRequest = 400,
-        NotFound = 404,
-        ServerError = 500
+        NotFound = 404
     }
 }
