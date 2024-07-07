@@ -5,6 +5,7 @@ using System.Reflection;
 using WorkBalance.Core;
 using WorkBalance.Core.Common;
 using WorkBalance.DataAccess;
+using WorkBalance.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,8 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(
     Assembly.GetExecutingAssembly()));
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
