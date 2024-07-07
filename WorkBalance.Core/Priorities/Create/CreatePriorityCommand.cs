@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using System.ComponentModel.DataAnnotations;
+using WorkBalance.Core.Common;
 using WorkBalance.Core.Models;
 
 namespace WorkBalance.Core.Priorities.Create

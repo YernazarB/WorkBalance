@@ -1,32 +1,28 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
-using WorkBalance.Core.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using WorkBalance.Core.Common;
 using WorkBalance.DataAccess;
 
 namespace WorkBalance.Core.Priorities.Delete
 {
-    public class DeletePriorityCommandHandler : IRequestHandler<DeletePriorityCommand, BaseHandlerResult>
+    public class DeletePriorityCommandHandler : BaseRequestHandler<DeletePriorityCommand, BaseHandlerResult>
     {
-        private readonly AppDbContext _db;
-
-        public DeletePriorityCommandHandler(AppDbContext db)
+        public DeletePriorityCommandHandler(AppDbContext db, ILogger<DeletePriorityCommandHandler> logger) : base(db, logger)
         {
-            _db = db;
         }
 
-        public async Task<BaseHandlerResult> Handle(DeletePriorityCommand request, CancellationToken cancellationToken)
+        public override async Task<BaseHandlerResult> Handle(DeletePriorityCommand request, CancellationToken cancellationToken)
         {
-            var priority = await _db.Priorities.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            var priority = await DbContext.Priorities.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
             if (priority == null)
             {
-                return BaseHandlerResult<PriorityModel>
-                    .ErrorResult(HandlerErrorCode.NotFound, "Priority not found.");
+                return ErrorResult(HandlerErrorCode.NotFound, "Priority not found.");
             }
 
-            _db.Priorities.Remove(priority);
-            await _db.SaveChangesAsync(cancellationToken);
+            DbContext.Priorities.Remove(priority);
+            await DbContext.SaveChangesAsync(cancellationToken);
 
-            return BaseHandlerResult.SuccessResult();
+            return SuccessResult();
         }
     }
 }

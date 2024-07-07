@@ -1,28 +1,25 @@
-﻿using MediatR;
+﻿using Microsoft.Extensions.Logging;
+using WorkBalance.Core.Common;
 using WorkBalance.Core.Models;
 using WorkBalance.DataAccess;
 using WorkBalance.Domain.Entities;
 
 namespace WorkBalance.Core.Priorities.Create
 {
-    public class CreatePriorityCommandHandler : IRequestHandler<CreatePriorityCommand, BaseHandlerResult<PriorityModel>>
+    public class CreatePriorityCommandHandler : BaseRequestHandler<CreatePriorityCommand, BaseHandlerResult<PriorityModel>>
     {
-        private readonly AppDbContext _db;
-
-        public CreatePriorityCommandHandler(AppDbContext db)
+        public CreatePriorityCommandHandler(AppDbContext db, ILogger<CreatePriorityCommandHandler> logger) : base(db, logger)
         {
-            _db = db;
         }
 
-        public async Task<BaseHandlerResult<PriorityModel>> Handle(CreatePriorityCommand request, CancellationToken cancellationToken)
+        public override async Task<BaseHandlerResult<PriorityModel>> Handle(CreatePriorityCommand request, CancellationToken cancellationToken)
         {
             var priority = new Priority { Level = request.Level };
 
-            await _db.AddAsync(priority, cancellationToken);
-            await _db.SaveChangesAsync(cancellationToken);
+            await DbContext.AddAsync(priority, cancellationToken);
+            await DbContext.SaveChangesAsync(cancellationToken);
 
-            return BaseHandlerResult<PriorityModel>
-                .SuccessResult(PriorityModel.Create(priority));
+            return SuccessResult(PriorityModel.Create(priority));
         }
     }
 }

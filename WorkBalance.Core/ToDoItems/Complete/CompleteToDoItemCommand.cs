@@ -2,9 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using WorkBalance.Core.Common;
 
-namespace WorkBalance.Core.Priorities.Delete
+namespace WorkBalance.Core.ToDoItems.Complete
 {
-    public class DeletePriorityCommand : IRequest<BaseHandlerResult>
+    public class CompleteToDoItemCommand : IRequest<BaseHandlerResult>
     {
         [Range(1, int.MaxValue)]
         public int Id { get; set; }

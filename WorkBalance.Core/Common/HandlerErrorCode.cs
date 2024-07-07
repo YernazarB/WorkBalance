@@ -1,4 +1,4 @@
-﻿namespace WorkBalance.Core.Models
+﻿namespace WorkBalance.Core.Common
 {
     public enum HandlerErrorCode
     {

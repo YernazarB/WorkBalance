@@ -1,22 +1,20 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using WorkBalance.Core.Common;
 using WorkBalance.Core.Models;
 using WorkBalance.DataAccess;
 
 namespace WorkBalance.Core.Priorities.Update
 {
-    public class UpdatePriorityCommandHandler : IRequestHandler<UpdatePriorityCommand, BaseHandlerResult<PriorityModel>>
+    public class UpdatePriorityCommandHandler : BaseRequestHandler<UpdatePriorityCommand, BaseHandlerResult<PriorityModel>>
     {
-        private readonly AppDbContext _db;
-
-        public UpdatePriorityCommandHandler(AppDbContext db)
+        public UpdatePriorityCommandHandler(AppDbContext db, ILogger<UpdatePriorityCommandHandler> logger) : base(db, logger)
         {
-            _db = db;
         }
 
-        public async Task<BaseHandlerResult<PriorityModel>> Handle(UpdatePriorityCommand request, CancellationToken cancellationToken)
+        public override async Task<BaseHandlerResult<PriorityModel>> Handle(UpdatePriorityCommand request, CancellationToken cancellationToken)
         {
-            var priority = await _db.Priorities.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            var priority = await DbContext.Priorities.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
             if (priority == null)
             {
                 return BaseHandlerResult<PriorityModel>
@@ -24,10 +22,9 @@ namespace WorkBalance.Core.Priorities.Update
             }
 
             priority.Level = request.Level;
-            await _db.SaveChangesAsync(cancellationToken);
+            await DbContext.SaveChangesAsync(cancellationToken);
 
-            return BaseHandlerResult<PriorityModel>
-                .SuccessResult(PriorityModel.Create(priority));
+            return SuccessResult(PriorityModel.Create(priority));
         }
     }
 }

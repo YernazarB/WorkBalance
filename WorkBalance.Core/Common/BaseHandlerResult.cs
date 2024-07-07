@@ -1,4 +1,4 @@
-﻿namespace WorkBalance.Core.Models
+﻿namespace WorkBalance.Core.Common
 {
     public class BaseHandlerResult
     {
@@ -7,7 +7,7 @@
         public string? ErrorMessage { get; set; }
 
         public static BaseHandlerResult SuccessResult() => new() { Success = true };
-        public static BaseHandlerResult ErrorResult(HandlerErrorCode errorCode, string errorMessage) => 
+        public static BaseHandlerResult ErrorResult(HandlerErrorCode errorCode, string errorMessage) =>
             new() { ErrorCode = errorCode, ErrorMessage = errorMessage };
     }
 
@@ -17,18 +17,18 @@
 
         public static BaseHandlerResult<T> SuccessResult(T data)
         {
-            return new() 
-            { 
-                Success = true, 
-                Data = data 
+            return new()
+            {
+                Success = true,
+                Data = data
             };
         }
 
         public static new BaseHandlerResult<T> ErrorResult(HandlerErrorCode errorCode, string errorMessage)
         {
-            return new() 
-            { 
-                ErrorCode = errorCode, 
+            return new()
+            {
+                ErrorCode = errorCode,
                 ErrorMessage = errorMessage
             };
         }
