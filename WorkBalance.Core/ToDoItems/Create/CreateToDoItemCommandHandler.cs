@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using WorkBalance.Core.Common;
 using WorkBalance.Core.Models;
 using WorkBalance.DataAccess;
@@ -14,6 +15,12 @@ namespace WorkBalance.Core.ToDoItems.Create
 
         public override async Task<BaseHandlerResult<ToDoItemModel>> Handle(CreateToDoItemCommand request, CancellationToken cancellationToken)
         {
+            var priority = await DbContext.Priorities.FirstOrDefaultAsync(x => x.Id == request.PriorityId, cancellationToken);
+            if (priority == null) 
+            {
+                return ErrorResult<ToDoItemModel>(HandlerErrorCode.NotFound, "Priority not found");
+            }
+
             var newToDoItem = new ToDoItem
             {
                 Description = request.Description,
