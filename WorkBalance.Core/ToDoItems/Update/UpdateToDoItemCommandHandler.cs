@@ -20,6 +20,12 @@ namespace WorkBalance.Core.ToDoItems.Update
                 return ErrorResult<ToDoItemModel>(HandlerErrorCode.NotFound, "ToDoItem not found.");
             }
 
+            var priority = await DbContext.Priorities.FirstOrDefaultAsync(x => x.Id == request.PriorityId, cancellationToken);
+            if (priority == null)
+            {
+                return ErrorResult<ToDoItemModel>(HandlerErrorCode.NotFound, "Priority not found");
+            }
+
             toDoItem.DueDate = request.DueDate;
             toDoItem.Description = request.Description;
             toDoItem.Title = request.Title;
