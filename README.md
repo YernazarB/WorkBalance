@@ -1,7 +1,7 @@
 # WorkBalance
 
 
-Intruction to run the app locally:
+Instruction to run the app locally:
 
 1. You need an installed Docker Desktop on your local machine
 2. Run the Docker Desktop on your machine
